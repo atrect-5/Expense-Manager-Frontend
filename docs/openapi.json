@@ -1,0 +1,2195 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "AzulSchoolProject",
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/Authentication/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Autentica a un usuario, setea cookie HttpOnly con JWT y cookie HttpOnly con refresh token; devuelve XSRF request token.",
+                "requestBody": {
+                    "description": "Las credenciales del usuario (email y contraseña).",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Authentication/refresh": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Actualiza el JWT usando un refresh token.",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Authentication/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Elimina la cookie de autenticación en logout y revoca refresh token en servidor.",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/api/Category": {
+            "post": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Crea una nueva categoría.",
+                "requestBody": {
+                    "description": "El objeto con los datos para crear la nueva categoría (El tipo de categoria \"Type\" debe ser \"INCOME\" o \"EXPENDITURE\").",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCategoryDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCategoryDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCategoryDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Retorna la categoría recién creada y la URL para acceder a ella.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Si el objeto enviado es inválido (ej. tipo de categoría incorrecto)."
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Obtiene una lista de categorías para un usuario, con filtros opcionales.",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "ID del usuario para el que se listan las categorías. Solo para administradores.",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "nameFilter",
+                        "in": "query",
+                        "description": "Filtro opcional para buscar categorías por nombre (no sensible a mayúsculas/minúsculas).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "typeFilter",
+                        "in": "query",
+                        "description": "Filtro opcional para buscar categorías por tipo (INCOME o EXPENDITURE).",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna la lista de categorías.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategoryDto"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategoryDto"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategoryDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Category/{id}": {
+            "get": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Obtiene una categoria específica por su ID.",
+                "operationId": "GetCategoryById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID de la categoria a buscar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna la categoria solicitada.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryDto"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para ver este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra la categoria con el ID especificado."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Actualiza una categoría existente.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID de la categoría a actualizar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "El objeto con los datos para actualizar la categoría.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateCategoryDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateCategoryDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateCategoryDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Retorna la categoría con los datos actualizados.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CategoryDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Si los datos de la categoría son inválidos."
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para ver este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra la categoría con el ID especificado."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Elimina una categoría por su ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID de la categoría a eliminar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Si la categoría fue eliminada exitosamente."
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para ver este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra la categoría con el ID especificado."
+                    }
+                }
+            }
+        },
+        "/api/MoneyAccount": {
+            "post": {
+                "tags": [
+                    "MoneyAccount"
+                ],
+                "summary": "Crea una nueva cuenta de dinero.",
+                "requestBody": {
+                    "description": "El objeto con los datos para crear la nueva cuenta (El tipo de cuenta \"accountType\" debe ser \"CASH\", \"DEBIT\" o \"CREDIT\").",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateMoneyAccountDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateMoneyAccountDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateMoneyAccountDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Retorna la cuenta recién creada y la URL para acceder a ella.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MoneyAccountDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MoneyAccountDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MoneyAccountDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Si el objeto enviado es inválido."
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "MoneyAccount"
+                ],
+                "summary": "Obtiene una lista de cuentas de dinero para un usuario, con filtros opcionales.",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "El ID del usuario para el que se buscan las cuentas (Solo admins).",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "nameFilter",
+                        "in": "query",
+                        "description": "Filtro opcional para buscar cuentas por nombre.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "typeFilter",
+                        "in": "query",
+                        "description": "Filtro opcional para buscar cuentas por tipo.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna la lista de cuentas.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/MoneyAccountDto"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/MoneyAccountDto"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/MoneyAccountDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/MoneyAccount/{id}": {
+            "get": {
+                "tags": [
+                    "MoneyAccount"
+                ],
+                "summary": "Obtiene una cuenta de dinero específica por su ID.",
+                "operationId": "GetMoneyAccountById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID de la cuenta a buscar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna la cuenta solicitada.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MoneyAccountDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MoneyAccountDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MoneyAccountDto"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para ver este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra la cuenta con el ID especificado."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "MoneyAccount"
+                ],
+                "summary": "Actualiza una cuenta de dinero existente.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID de la cuenta a actualizar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "El objeto con los datos para actualizar la cuenta.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateMoneyAccountDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateMoneyAccountDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateMoneyAccountDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Retorna la cuenta con los datos actualizados.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MoneyAccountDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MoneyAccountDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MoneyAccountDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Si los datos de la cuenta son inválidos."
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para actualizar este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra la cuenta con el ID especificado."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "MoneyAccount"
+                ],
+                "summary": "Elimina una cuenta de dinero por su ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID de la cuenta a eliminar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Si la cuenta fue eliminada exitosamente."
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para eliminar este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra la cuenta con el ID especificado."
+                    }
+                }
+            }
+        },
+        "/api/users/{userId}/statistics/spending-by-category": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Obtiene un desglose de gastos por categoría para un usuario en un período de tiempo.",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "El ID del usuario para el que se busca la estadística.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "startDate",
+                        "in": "query",
+                        "description": "La fecha de inicio del período (formato: YYYY-MM-DD).",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "endDate",
+                        "in": "query",
+                        "description": "La fecha de fin del período (formato: YYYY-MM-DD).",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Opcional. Limita el resultado a las 'n' categorías con más gastos.",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna el desglose de gastos.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategorySummaryDto"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategorySummaryDto"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategorySummaryDto"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Si las fechas no son válidas."
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene acceso a la ruta."
+                    }
+                }
+            }
+        },
+        "/api/users/{userId}/statistics/income-by-category": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Obtiene un desglose de ingresos por categoría para un usuario en un período de tiempo.",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "El ID del usuario para el que se busca la estadística.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "startDate",
+                        "in": "query",
+                        "description": "La fecha de inicio del período (formato: YYYY-MM-DD).",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "endDate",
+                        "in": "query",
+                        "description": "La fecha de fin del período (formato: YYYY-MM-DD).",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Opcional. Limita el resultado a las 'n' categorías con más ingresos.",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna el desglose de gastos.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategorySummaryDto"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategorySummaryDto"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CategorySummaryDto"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Si las fechas no son válidas."
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene acceso a la ruta."
+                    }
+                }
+            }
+        },
+        "/api/users/{userId}/summary": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Obtiene un resumen financiero para un usuario.",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "El ID del usuario para el que se busca el resumen.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna el resumen financiero.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FinancialSummaryDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FinancialSummaryDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FinancialSummaryDto"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso de acceder a esta ruta."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra el usuario con el ID especificado."
+                    }
+                }
+            }
+        },
+        "/api/users/{userId}/statistics/monthly-cash-flow": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Obtiene el flujo de efectivo mensual (ingresos vs. gastos) para un usuario.",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "El ID del usuario para el que se busca la estadística.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "months",
+                        "in": "query",
+                        "description": "El número de meses a devolver (por defecto 6, máximo 24).",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 6
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna el flujo de efectivo mensual.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/MonthlyFlowDto"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/MonthlyFlowDto"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/MonthlyFlowDto"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Si el número de meses es inválido."
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para ver estas estadísticas."
+                    }
+                }
+            }
+        },
+        "/api/Transaction": {
+            "post": {
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Crea una nueva transacción.",
+                "requestBody": {
+                    "description": "El objeto con los datos para crear la nueva transacción.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTransactionDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTransactionDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTransactionDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Retorna la transacción recién creada y la URL para acceder a ella.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Si el objeto enviado es inválido."
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Obtiene una lista de transacciones para un usuario, con filtros opcionales.",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "El ID del usuario para el que se buscan las transacciones (Solo para administradores).",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "moneyAccountId",
+                        "in": "query",
+                        "description": "Filtro opcional para buscar transacciones por cuenta de dinero.",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "categoryId",
+                        "in": "query",
+                        "description": "Filtro opcional para buscar transacciones por categoría.",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "startDate",
+                        "in": "query",
+                        "description": "Filtro opcional para buscar transacciones desde una fecha (formato: YYYY-MM-DD).",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "endDate",
+                        "in": "query",
+                        "description": "Filtro opcional para buscar transacciones hasta una fecha (formato: YYYY-MM-DD).",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna la lista de transacciones.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TransactionDto"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TransactionDto"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TransactionDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Transaction/{id}": {
+            "get": {
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Obtiene una transacción específica por su ID.",
+                "operationId": "GetTransactionById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID de la transacción a buscar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna la transacción solicitada.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionDto"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para ver este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra la transacción con el ID especificado."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Actualiza una transacción existente.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID de la transacción a actualizar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "El objeto con los datos para actualizar la transacción.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTransactionDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTransactionDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTransactionDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Retorna la transacción con los datos actualizados.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Si los datos de la transacción son inválidos."
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para ver este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra la transacción con el ID especificado."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Elimina una transacción por su ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID de la transacción a eliminar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Si la transacción fue eliminada exitosamente."
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para ver este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra la transacción con el ID especificado."
+                    }
+                }
+            }
+        },
+        "/api/Transfer": {
+            "post": {
+                "tags": [
+                    "Transfer"
+                ],
+                "summary": "Crea una nueva transferencia.",
+                "requestBody": {
+                    "description": "El objeto con los datos para crear la nueva transferencia.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTransferDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTransferDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTransferDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Retorna la transferencia recién creada y la URL para acceder a ella.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Si el objeto enviado es inválido."
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Transfer"
+                ],
+                "summary": "Obtiene una lista de transferencias para un usuario, con filtros opcionales.",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "El ID del usuario para el que se buscan las transferencias (Solo para admins).",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "moneyAccountId",
+                        "in": "query",
+                        "description": "Filtro opcional para buscar transferencias por cuenta de dinero.",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "startDate",
+                        "in": "query",
+                        "description": "Filtro opcional para buscar transferencias desde una fecha (formato: YYYY-MM-DD).",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    {
+                        "name": "endDate",
+                        "in": "query",
+                        "description": "Filtro opcional para buscar transferencias hasta una fecha (formato: YYYY-MM-DD).",
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna la lista de transferencias.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TransferDto"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TransferDto"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TransferDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Transfer/{id}": {
+            "get": {
+                "tags": [
+                    "Transfer"
+                ],
+                "summary": "Obtiene una transferencia específica por su ID.",
+                "operationId": "GetTransferById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID de la transferencia a buscar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna la transferencia solicitada.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferDto"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Si no se encuentra la transferencia con el ID especificado."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Transfer"
+                ],
+                "summary": "Elimina una transferencia por su ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID de la transferencia a eliminar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Si la transferencia fue eliminada exitosamente."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra la transferencia con el ID especificado."
+                    }
+                }
+            }
+        },
+        "/api/User": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Crea un nuevo usuario.",
+                "requestBody": {
+                    "description": "El objeto con los datos para crear el nuevo usuario.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateUserDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateUserDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateUserDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Retorna el usuario recién creado y la URL para acceder a él.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Si el objeto enviado es inválido."
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Obtiene una lista de todos los usuarios.",
+                "responses": {
+                    "200": {
+                        "description": "Retorna la lista de todos los usuarios.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/UserDto"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/UserDto"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/UserDto"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Si el usuario no es un administrador."
+                    }
+                }
+            }
+        },
+        "/api/User/{id}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Obtiene un usuario específico por su ID.",
+                "operationId": "GetUserById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID del usuario a buscar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna el usuario solicitado.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDto"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para ver este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra el usuario con el ID especificado."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Actualiza un usuario existente.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID del usuario a actualizar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "El objeto con los datos para actualizar el usuario.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Retorna el usuario con los datos actualizados.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDto"
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDto"
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserDto"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para actualizar este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra el usuario con el ID especificado."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Elimina un usuario por su ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "El ID del usuario a eliminar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Si el usuario fue eliminado exitosamente."
+                    },
+                    "403": {
+                        "description": "Si el usuario no tiene permiso para actualizar este recurso."
+                    },
+                    "404": {
+                        "description": "Si no se encuentra el usuario con el ID especificado."
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CategoryDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "type": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "CategorySummaryDto": {
+                "type": "object",
+                "properties": {
+                    "categoryId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "categoryName": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "totalAmount": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "CreateCategoryDto": {
+                "required": [
+                    "name",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "maxLength": 50,
+                        "minLength": 0,
+                        "type": "string"
+                    },
+                    "type": {
+                        "minLength": 1,
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "CreateMoneyAccountDto": {
+                "required": [
+                    "accountType",
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "maxLength": 50,
+                        "minLength": 0,
+                        "type": "string"
+                    },
+                    "accountType": {
+                        "minLength": 1,
+                        "type": "string"
+                    },
+                    "balance": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "creditLimit": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "CreateTransactionDto": {
+                "required": [
+                    "amount",
+                    "categoryId",
+                    "moneyAccountId",
+                    "userId"
+                ],
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "minimum": 0.01,
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "description": {
+                        "maxLength": 500,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "categoryId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "moneyAccountId": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "CreateTransferDto": {
+                "required": [
+                    "amount",
+                    "moneyAccountReceiveId",
+                    "moneyAccountSendId",
+                    "userId"
+                ],
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "minimum": 0.01,
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "description": {
+                        "maxLength": 500,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "moneyAccountSendId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "moneyAccountReceiveId": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "CreateUserDto": {
+                "required": [
+                    "email",
+                    "name",
+                    "password"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "minLength": 1,
+                        "type": "string"
+                    },
+                    "email": {
+                        "minLength": 1,
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "FinancialSummaryDto": {
+                "type": "object",
+                "properties": {
+                    "totalCashBalance": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "totalCreditLimit": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "totalCreditUsed": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "LoginDto": {
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "minLength": 1,
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "MoneyAccountDto": {
+                "required": [
+                    "accountType",
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "accountType": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "balance": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "creditLimit": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "MonthlyFlowDto": {
+                "type": "object",
+                "properties": {
+                    "year": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "month": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalIncome": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "totalExpenses": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "netFlow": {
+                        "type": "number",
+                        "format": "double",
+                        "readOnly": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ProblemDetails": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "title": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "integer",
+                        "format": "int32",
+                        "nullable": true
+                    },
+                    "detail": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "instance": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": {}
+            },
+            "TransactionDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "categoryId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "moneyAccountId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "transferId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "TransferDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "moneyAccountSendId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "moneyAccountReceiveId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "transactions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TransactionDto"
+                        },
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "UpdateCategoryDto": {
+                "required": [
+                    "name",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "maxLength": 50,
+                        "minLength": 0,
+                        "type": "string"
+                    },
+                    "type": {
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "UpdateMoneyAccountDto": {
+                "required": [
+                    "accountType",
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "maxLength": 50,
+                        "minLength": 0,
+                        "type": "string"
+                    },
+                    "accountType": {
+                        "minLength": 1,
+                        "type": "string"
+                    },
+                    "creditLimit": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "UpdateTransactionDto": {
+                "required": [
+                    "amount",
+                    "categoryId",
+                    "date",
+                    "moneyAccountId"
+                ],
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "minimum": 0.01,
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "description": {
+                        "maxLength": 500,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "categoryId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "moneyAccountId": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "UpdateUserDto": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "password": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "UserDto": {
+                "required": [
+                    "email",
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "securitySchemes": {
+            "XSRF": {
+                "type": "apiKey",
+                "description": "Ingrese manualmente el token XSRF (double-submit).",
+                "name": "X-CSRF-TOKEN",
+                "in": "header"
+            }
+        }
+    },
+    "security": [
+        {
+            "XSRF": []
+        }
+    ]
+}
