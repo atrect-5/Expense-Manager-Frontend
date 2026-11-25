@@ -5,9 +5,10 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { UserService } from '../../core/services/user.service';
 import { NotificationService } from '../../core/services/notification.service';
-import { UserDto, CreateUserDto, UpdateUserDto } from '../../core/models';
+import { UserDto, CreateUserDto } from '../../core/models';
 import { ModalComponent } from '../../shared/components/modal.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog.component';
+import { EditUserModalComponent } from '../../shared/components/edit-user-modal.component';
 
 /**
  * Gestión de Usuarios en el Sistema (Exclusivo para Administradores).
@@ -15,7 +16,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog.c
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent, ConfirmDialogComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, ConfirmDialogComponent, EditUserModalComponent],
   template: `
     <div class="users-page">
       <!-- Encabezado -->
@@ -144,40 +145,13 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog.c
         </div>
       </app-modal>
 
-      <!-- Modal Editar Usuario -->
-      <app-modal [isOpen]="isEditModalOpen()" title="Editar Usuario" (close)="isEditModalOpen.set(false)">
-        <form body (ngSubmit)="saveEditUser()" id="editUserForm">
-          <div class="form-group">
-            <label for="edit-user-name" class="form-label">Nombre Completo</label>
-            <input
-              id="edit-user-name"
-              type="text"
-              class="input-field"
-              [(ngModel)]="editUserData.name"
-              name="editUserName"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="edit-user-pass" class="form-label">Nueva Contraseña (Opcional)</label>
-            <input
-              id="edit-user-pass"
-              type="password"
-              class="input-field"
-              placeholder="Dejar en blanco para no modificar"
-              [(ngModel)]="editUserData.password"
-              name="editUserPass"
-            />
-          </div>
-        </form>
-
-        <div footer>
-          <button type="button" class="btn btn-secondary" (click)="isEditModalOpen.set(false)">Cancelar</button>
-          <button type="submit" form="editUserForm" class="btn btn-primary" [disabled]="saving()">
-            {{ saving() ? 'Actualizando...' : 'Guardar Cambios' }}
-          </button>
-        </div>
-      </app-modal>
+      <!-- Modal Editar Usuario (componente reutilizable) -->
+      <app-edit-user-modal
+        [isOpen]="isEditModalOpen()"
+        [user]="selectedUser()"
+        (close)="isEditModalOpen.set(false)"
+        (saved)="loadUsers()">
+      </app-edit-user-modal>
 
       <!-- Diálogo Confirmar Eliminación -->
       <app-confirm-dialog
@@ -289,11 +263,6 @@ export class UsersComponent implements OnInit {
     password: ''
   };
 
-  public editUserData: UpdateUserDto = {
-    name: '',
-    password: ''
-  };
-
   ngOnInit(): void {
     this.loadUsers();
   }
@@ -346,34 +315,7 @@ export class UsersComponent implements OnInit {
 
   public openEditModal(user: UserDto): void {
     this.selectedUser.set(user);
-    this.editUserData = {
-      name: user.name,
-      password: ''
-    };
     this.isEditModalOpen.set(true);
-  }
-
-  public saveEditUser(): void {
-    const user = this.selectedUser();
-    if (!user) return;
-
-    this.saving.set(true);
-    const payload: UpdateUserDto = {};
-    if (this.editUserData.name) payload.name = this.editUserData.name;
-    if (this.editUserData.password) payload.password = this.editUserData.password;
-
-    this.userService.updateUser(user.id, payload).subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.isEditModalOpen.set(false);
-        this.notificationService.success(`Usuario actualizado.`);
-        this.loadUsers();
-      },
-      error: (err) => {
-        this.saving.set(false);
-        this.notificationService.error(err.error?.detail || 'Error al actualizar usuario.');
-      }
-    });
   }
 
   public openDeleteConfirm(user: UserDto): void {

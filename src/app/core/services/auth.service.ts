@@ -195,6 +195,20 @@ export class AuthService {
   }
 
   /**
+   * Actualiza los datos del perfil del usuario autenticado tras una edición exitosa.
+   */
+  public updateCurrentUserProfile(updated: UserDto): void {
+    const current = this.currentUser();
+    if (current && current.id === updated.id) {
+      this.setCurrentUser({
+        ...current,
+        name: updated.name,
+        email: updated.email ?? current.email
+      });
+    }
+  }
+
+  /**
    * Actualiza el ID de usuario cuando se detecta un ID real desde una entidad cargada.
    */
   public updateDetectedUserId(newId: number): void {

@@ -1,8 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ThemeService, Theme } from '../../core/services/theme.service';
 import { AuthService } from '../../core/services/auth.service';
+import { UserService } from '../../core/services/user.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { environment } from '../../../environments/environment';
+import { EditUserModalComponent } from '../../shared/components/edit-user-modal.component';
 
 /**
  * Pantalla de Ajustes de la aplicación:
@@ -13,7 +17,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, EditUserModalComponent],
   template: `
     <div class="settings-page">
       <!-- Encabezado -->
@@ -79,12 +83,19 @@ import { environment } from '../../../environments/environment';
 
       <!-- Sección 2: Información del Usuario y Sesión -->
       <div class="card settings-card">
-        <div class="card-section-title">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          <div>
-            <h3>Datos de tu Cuenta</h3>
-            <p>Información del usuario autenticado en la sesión</p>
+        <div class="card-section-header">
+          <div class="card-section-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <div>
+              <h3>Datos de tu Cuenta</h3>
+              <p>Información del usuario autenticado en la sesión</p>
+            </div>
           </div>
+
+          <button type="button" class="btn btn-secondary btn-sm" (click)="isEditProfileOpen.set(true)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path></svg>
+            Editar Perfil
+          </button>
         </div>
 
         <div class="info-list">
@@ -112,7 +123,49 @@ import { environment } from '../../../environments/environment';
         </div>
       </div>
 
-      <!-- Sección 3: Conexión con el Backend (solo visible para administradores) -->
+      <!-- Sección 3: Seguridad de la cuenta -->
+      <div class="card settings-card">
+        <div class="card-section-title">
+          <div>
+            <h3>Cambiar Contraseña</h3>
+            <p>Confirma tu contraseña actual para establecer una nueva</p>
+          </div>
+        </div>
+
+        <form (ngSubmit)="changePassword()" class="password-form">
+          <div class="form-group">
+            <label for="current-password" class="form-label">Contraseña actual</label>
+            <input
+              id="current-password"
+              type="password"
+              class="input-field"
+              required
+              autocomplete="current-password"
+              [(ngModel)]="currentPassword"
+              name="currentPassword"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="new-password" class="form-label">Nueva contraseña</label>
+            <input
+              id="new-password"
+              type="password"
+              class="input-field"
+              required
+              autocomplete="new-password"
+              [(ngModel)]="newPassword"
+              name="newPassword"
+            />
+          </div>
+
+          <button type="submit" class="btn btn-primary" [disabled]="changingPassword()">
+            {{ changingPassword() ? 'Actualizando...' : 'Cambiar Contraseña' }}
+          </button>
+        </form>
+      </div>
+
+      <!-- Sección 4: Conexión con el Backend (solo visible para administradores) -->
       @if (authService.isAdmin()) {
         <div class="card settings-card">
           <div class="card-section-title">
@@ -147,6 +200,13 @@ import { environment } from '../../../environments/environment';
           </div>
         </div>
       }
+      <!-- Modal Editar Perfil (componente reutilizable) -->
+      <app-edit-user-modal
+        [isOpen]="isEditProfileOpen()"
+        [user]="authService.currentUser()"
+        title="Editar mi perfil"
+        (close)="isEditProfileOpen.set(false)">
+      </app-edit-user-modal>
     </div>
   `,
   styles: [`
@@ -170,6 +230,17 @@ import { environment } from '../../../environments/environment';
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+    }
+    .card-section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .btn-sm {
+      padding: 0.4375rem 0.75rem;
+      font-size: 0.8125rem;
     }
     .card-section-title {
       display: flex;
@@ -269,6 +340,12 @@ import { environment } from '../../../environments/environment';
       flex-direction: column;
       gap: 0.875rem;
     }
+    .password-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 420px;
+    }
     .info-item {
       display: flex;
       align-items: center;
@@ -304,6 +381,38 @@ import { environment } from '../../../environments/environment';
 export class SettingsComponent {
   public readonly themeService = inject(ThemeService);
   public readonly authService = inject(AuthService);
-
+  private readonly userService = inject(UserService);
+  private readonly notificationService = inject(NotificationService);
   public readonly apiUrl = environment.apiUrl;
+  public readonly isEditProfileOpen = signal<boolean>(false);
+  public readonly changingPassword = signal<boolean>(false);
+  public currentPassword = '';
+  public newPassword = '';
+
+  public changePassword(): void {
+    if (!this.currentPassword || !this.newPassword) {
+      this.notificationService.warning('Ingresa tu contraseña actual y la nueva contraseña.');
+      return;
+    }
+
+    this.changingPassword.set(true);
+    this.userService.changePassword({
+      currentPassword: this.currentPassword,
+      newPassword: this.newPassword
+    }).subscribe({
+      next: () => {
+        this.changingPassword.set(false);
+        this.currentPassword = '';
+        this.newPassword = '';
+        this.notificationService.success('Tu contraseña fue actualizada.');
+      },
+      error: (err) => {
+        this.changingPassword.set(false);
+        const message = typeof err.error === 'string'
+          ? err.error
+          : err.error?.detail || 'Error al cambiar la contraseña.';
+        this.notificationService.error(message);
+      }
+    });
+  }
 }

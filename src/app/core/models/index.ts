@@ -23,7 +23,11 @@ export interface CreateUserDto {
 
 export interface UpdateUserDto {
   name?: string;
-  password?: string;
+}
+
+export interface ChangePasswordDto {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export interface LoginDto {
