@@ -112,39 +112,41 @@ import { environment } from '../../../environments/environment';
         </div>
       </div>
 
-      <!-- Sección 3: Conexión con el Backend -->
-      <div class="card settings-card">
-        <div class="card-section-title">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"></rect><rect width="20" height="8" x="2" y="14" rx="2" ry="2"></rect><line x1="6" x2="6.01" y1="6" y2="6"></line><line x1="6" x2="6.01" y1="18" y2="18"></line></svg>
-          <div>
-            <h3>Conexión con el Backend ASP.NET Core</h3>
-            <p>Parámetros de configuración de la API REST</p>
+      <!-- Sección 3: Conexión con el Backend (solo visible para administradores) -->
+      @if (authService.isAdmin()) {
+        <div class="card settings-card">
+          <div class="card-section-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"></rect><rect width="20" height="8" x="2" y="14" rx="2" ry="2"></rect><line x1="6" x2="6.01" y1="6" y2="6"></line><line x1="6" x2="6.01" y1="18" y2="18"></line></svg>
+            <div>
+              <h3>Conexión con el Backend ASP.NET Core</h3>
+              <p>Parámetros de configuración de la API REST</p>
+            </div>
+          </div>
+
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-label">URL de la API:</span>
+              <code class="code-badge">{{ apiUrl }}</code>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Token CSRF (Header X-CSRF-TOKEN):</span>
+              <span class="info-value">
+                @if (authService.csrfToken()) {
+                  <span class="badge badge-income">Presente y Activo</span>
+                } @else {
+                  <span class="badge badge-expenditure">No detectado</span>
+                }
+              </span>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Cookies HttpOnly (JWT & Refresh):</span>
+              <span class="badge badge-income">Manejadas automáticamente por el navegador</span>
+            </div>
           </div>
         </div>
-
-        <div class="info-list">
-          <div class="info-item">
-            <span class="info-label">URL de la API:</span>
-            <code class="code-badge">{{ apiUrl }}</code>
-          </div>
-
-          <div class="info-item">
-            <span class="info-label">Token CSRF (Header X-CSRF-TOKEN):</span>
-            <span class="info-value">
-              @if (authService.csrfToken()) {
-                <span class="badge badge-income">Presente y Activo</span>
-              } @else {
-                <span class="badge badge-expenditure">No detectado</span>
-              }
-            </span>
-          </div>
-
-          <div class="info-item">
-            <span class="info-label">Cookies HttpOnly (JWT & Refresh):</span>
-            <span class="badge badge-income">Manejadas automáticamente por el navegador</span>
-          </div>
-        </div>
-      </div>
+      }
     </div>
   `,
   styles: [`
