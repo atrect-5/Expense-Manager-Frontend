@@ -20,7 +20,7 @@ import { AuthService } from '../../core/services/auth.service';
             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
           </svg>
           <div class="logo-text">
-            <h2>GastoSmart</h2>
+            <h2>a5-em</h2>
             <span class="logo-tag">Finanzas Personales</span>
           </div>
         </div>

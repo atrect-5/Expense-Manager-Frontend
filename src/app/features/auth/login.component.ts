@@ -30,7 +30,7 @@ import { ToastContainerComponent } from '../../shared/components/toast-container
               <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
             </svg>
           </div>
-          <h1 class="auth-title">GastoSmart</h1>
+          <h1 class="auth-title">a5-em</h1>
           <p class="auth-subtitle">Gestión inteligente de finanzas y gastos personales</p>
         </div>
 

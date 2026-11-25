@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "expense-tracker": {
+    "a5-em": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:class": {
@@ -90,10 +90,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "expense-tracker:build:production"
+              "buildTarget": "a5-em:build:production"
             },
             "development": {
-              "buildTarget": "expense-tracker:build:development"
+              "buildTarget": "a5-em:build:development"
             }
           },
           "defaultConfiguration": "development"
